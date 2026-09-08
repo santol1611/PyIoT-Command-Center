@@ -10,7 +10,7 @@
 Run all project commands from the repository root:
 
 ```cmd
-cd /d C:\Users\Santol\Desktop\Coding\PyIoT-Command-Center
+cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 ```
 
 ## First-Time Setup
@@ -96,7 +96,7 @@ exit successfully. New tests should use the `test_*.py` naming convention inside
 ## Daily Workflow
 
 ```cmd
-cd /d C:\Users\Santol\Desktop\Coding\PyIoT-Command-Center
+cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 .venv\Scripts\activate
 python simulator\main.py
 python -m unittest discover -s tests -p "test_*.py"

@@ -1,27 +1,53 @@
-# Python
+# 🐍 ไฟล์ชั่วคราวที่ Python สร้างขึ้น
 __pycache__/
 *.py[cod]
 *.pyd
 
-# Virtual Environment
-.venv/
-venv/
-
-# Environment variables
-.env
-
-# Testing
+# 🧪 Cache และรายงานจากการทดสอบหรือวิเคราะห์โค้ด
 .pytest_cache/
 .coverage
+.coverage.*
+htmlcov/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
 
-# Logs
+# 🌱 Virtual environment เฉพาะเครื่อง — ห้าม Commit
+.venv/
+venv/
+env/
+ENV/
+
+# 🔐 ค่าตั้งค่าส่วนตัวและข้อมูลลับ — ห้าม Commit
+.env
+.env.*
+!.env.example
+.envrc
+*.pem
+*.key
+*.token
+credentials.json
+service-account*.json
+secrets/
+
+# 📝 Log ที่เกิดจากการรันโปรแกรม
 *.log
+logs/
 
-# Build
+# 📦 ไฟล์ที่สร้างระหว่าง build หรือการแพ็กเกจ
 build/
 dist/
 *.egg-info/
+.eggs/
+pip-wheel-metadata/
 
-# OS
+# 🛠️ การตั้งค่า IDE เฉพาะผู้พัฒนา
+.idea/
+*.code-workspace
+
+# 💻 ไฟล์ระบบปฏิบัติการ
 .DS_Store
 Thumbs.db
+Desktop.ini

@@ -387,7 +387,7 @@ cd
 ตัวอย่าง:
 
 ```text
-C:\Users\Santol\Desktop\Coding\PyIoT-Command-Center
+%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center
 ```
 
 ---
@@ -488,7 +488,7 @@ code .
 ตัวอย่าง:
 
 ```cmd
-cd /d C:\Users\Santol\Desktop\Coding\PyIoT-Command-Center
+cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 code .
 ```
 
@@ -701,7 +701,7 @@ git diff
 ## เริ่มทำงานกับ Project
 
 ```cmd
-cd /d C:\Users\Santol\Desktop\Coding\PyIoT-Command-Center
+cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 ```
 
 เปิด Virtual Environment:
