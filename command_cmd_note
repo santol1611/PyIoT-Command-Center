@@ -1,0 +1,42 @@
+สั่งเปิด Virtual Environment (.venv)
+    .venv\Scripts\activate
+
+สั่งตรวจสอบและแสดงไลบรารี (Packages) ทั้งหมดที่ถูกติดตั้งใน Virtual Environment (.venv) นี้
+    python -m pip list หรือ py -m pip list (ถ้าใช้งาน .venv ให้ใช้งาน python เพราะมันจะไปเรียกใช้ python.exe ใน .venv นั้นๆ ส่วน -m ย่อมาจาก module python และ py จะต้องมี -m เสมอ)
+
+สั่ง Update ไลบรารี pip
+    python -m pip install --upgrade pip
+
+สั่งสร้าง Folder
+    mkdir (ตามด้วยชื่อ Folder) เช่น mkdir Folder_A
+    ถ้าต้องการสร้าง Folder ใน Folder ให้ระบุว่า mkdir Folder_A\Folder_B
+
+สั่งสร้าง File เปล่า
+    type nul > backend\__init__.py (type nul คือสั่งอ่านค่า Null(nul) และเปลี่ยนจากการแสดงผลค่าที่อ่านมาใน cmd เป็นการสร้าง file โดยคำสั่ง > backend\__init__.py)
+
+สั่ง File main.py ทำงาน
+    python simulator\main.py
+
+สั่ง clear terminal
+    cls
+
+สั่งดู file ทั้งหมดใน Part
+    dir
+
+สั่งติดตั้ง git for window
+    winget install --id Git.Git -e --source winget
+
+สั่งดู version git 
+    git --version
+
+สั่งดูตำแหน่ง Part
+    cd
+
+สั่งติดตั้ง git ใน Project
+    git init
+
+กำหด branch เป็น main
+    git branch -M main
+
+ดู status ของ git
+    git status
