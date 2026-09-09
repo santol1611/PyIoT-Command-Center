@@ -152,7 +152,14 @@ PyIoT-Command-Center/
 │
 ├── simulator/
 │   ├── __init__.py
-│   └── main.py
+│   ├── main.py
+│   ├── device.py
+│   ├── telemetry.py
+│   └── sensors/
+│       ├── __init__.py
+│       ├── base.py
+│       ├── temperature.py
+│       └── humidity.py
 │
 ├── frontend/
 │   ├── css/
@@ -166,6 +173,7 @@ PyIoT-Command-Center/
     ├── PROJECT_MAP.md
     ├── ARCHITECTURE.md
     ├── DEVELOPMENT.md
+    └── COMMANDS.md
 ```
 
 ### หน้าที่ของแต่ละส่วน
@@ -188,8 +196,8 @@ PyIoT-Command-Center/
 
 | Phase | รายละเอียด | สถานะ |
 |:---:|---|:---:|
-| 01 | Project Foundation | 🚧 กำลังพัฒนา |
-| 02 | Virtual Sensor Simulator | ⏳ |
+| 01 | Project Foundation | ✅ |
+| 02 | Virtual Sensor Simulator | 🚧 กำลังพัฒนา |
 | 03 | MQTT Communication | ⏳ |
 | 04 | FastAPI Backend | ⏳ |
 | 05 | PostgreSQL & Data Model | ⏳ |
@@ -262,11 +270,24 @@ python -m pip install -r requirements.txt
 code .
 ```
 
-### 6. ทดสอบ Simulator
+### 6. รัน Simulator
 
 ```cmd
 python simulator\main.py
 ```
+
+Simulator จะแสดงข้อมูลจากอุปกรณ์จำลองในรูปแบบ JSON ชุดใหม่ทุก 2 วินาที ตัวอย่างเช่น:
+
+```json
+{
+    "device_id": "ESP32-ROOM-001",
+    "temperature": 30.12,
+    "humidity": 65.34,
+    "timestamp": "2026-09-09T18:29:08.576066+00:00"
+}
+```
+
+ค่าอุณหภูมิ ความชื้น และเวลาจะเปลี่ยนไปในแต่ละรอบ กด `Ctrl+C` เมื่อต้องการหยุด Simulator
 
 ---
 
@@ -357,22 +378,23 @@ docs: update architecture
 │                                  │
 │     PyIoT Command Center         │
 │                                  │
-│     Current Phase: 01            │
-│     Project Foundation 🚧        │
+│     Current Phase: 02            │
+│     Virtual Sensor Simulator 🚧  │
 │                                  │
 └──────────────────────────────────┘
 ```
 
-ตอนนี้กำลังเตรียม:
+สถานะปัจจุบัน:
 
 - [x] Project structure
 - [x] Python virtual environment
 - [x] Git repository
-- [ ] `AGENTS.md`
-- [ ] `docs/PROJECT_MAP.md`
-- [ ] `docs/ARCHITECTURE.md`
-- [ ] `docs/DEVELOPMENT.md`
-- [ ] Phase 1 Review
+- [x] Phase 1 documentation
+- [x] Temperature และ Humidity Sensor จำลอง
+- [x] Virtual Device และ Telemetry พร้อมเวลา UTC
+- [x] แสดงข้อมูลเป็น JSON ทุก 2 วินาที
+- [ ] Automated tests สำหรับ Simulator
+- [ ] Phase 2 Review
 
 ---
 

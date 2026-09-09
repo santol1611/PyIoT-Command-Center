@@ -15,7 +15,7 @@ The project is being developed incrementally by phases.
 
 Current phase:
 
-Phase 1 - Project Foundation
+Phase 2 - Virtual Sensor Simulator
 
 See:
 
@@ -101,7 +101,7 @@ After code changes:
 
 Use Windows CMD syntax. Activate `.venv` before running the commands below.
 
-### Phase 1 — Project Foundation
+### Phase 2 — Virtual Sensor Simulator
 
 Run the applicable checks after changing Python code:
 
@@ -111,15 +111,25 @@ python simulator\main.py
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-Expected simulator output:
+Example simulator output:
 
-```text
-PyIoT Command Center
-Environment setup completed.
+```json
+{
+    "device_id": "ESP32-ROOM-001",
+    "temperature": 30.12,
+    "humidity": 65.34,
+    "timestamp": "2026-09-09T18:29:08.576066+00:00"
+}
 ```
 
-The `tests/` directory currently has no tests, so the unittest command may report
-`Ran 0 tests`; retain this command as the project test convention as tests are added.
+The temperature, humidity, and timestamp values change each time. The simulator
+prints a new JSON object every 2 seconds and continues until it is stopped with
+`Ctrl+C`.
+
+The `tests/` directory currently has no tests. The unittest command reports
+`Ran 0 tests` / `NO TESTS RAN` and returns a non-zero exit code. Retain the command
+as the project test convention as tests are added, but do not treat the current
+no-test result as a code failure.
 
 Do not run or add checks for future-phase components until that phase is requested.
 

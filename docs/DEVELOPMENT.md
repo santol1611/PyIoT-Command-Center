@@ -45,8 +45,9 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` is currently empty because the project is in Phase 1. Keep this
-command in the setup flow so it remains valid when dependencies are added.
+`requirements.txt` is currently empty because Phase 2 uses only Python's built-in
+modules. Keep this command in the setup flow so it remains valid when dependencies
+are added.
 
 ### 4. Create local environment settings
 
@@ -67,18 +68,26 @@ code .
 
 ## Run the Current Phase
 
-Phase 1 provides a foundation smoke check through the simulator entry point:
+Phase 2 provides a virtual device with temperature and humidity sensors. Run it
+through the simulator entry point:
 
 ```cmd
 python simulator\main.py
 ```
 
-Expected output:
+Example output:
 
-```text
-PyIoT Command Center
-Environment setup completed.
+```json
+{
+    "device_id": "ESP32-ROOM-001",
+    "temperature": 30.12,
+    "humidity": 65.34,
+    "timestamp": "2026-09-09T18:29:08.576066+00:00"
+}
 ```
+
+The temperature, humidity, and timestamp values change each time. The simulator
+prints a new JSON object every 2 seconds. Press `Ctrl+C` to stop it.
 
 ## Verify Changes
 
@@ -89,9 +98,10 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-There are no automated tests yet, so unittest may report `Ran 0 tests` and still
-exit successfully. New tests should use the `test_*.py` naming convention inside
-`tests/`.
+There are no automated tests yet. The unittest command reports `Ran 0 tests` /
+`NO TESTS RAN` and returns a non-zero exit code. This no-test result is expected in
+the current phase and does not indicate a simulator failure. New tests should use
+the `test_*.py` naming convention inside `tests/`.
 
 ## Daily Workflow
 
@@ -101,5 +111,8 @@ cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 python simulator\main.py
 python -m unittest discover -s tests -p "test_*.py"
 ```
+
+The simulator keeps running, so stop it with `Ctrl+C` before running the unittest
+command.
 
 Use `deactivate` when you finish working in the virtual environment.
