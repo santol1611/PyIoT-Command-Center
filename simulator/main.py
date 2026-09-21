@@ -6,22 +6,17 @@ from device import VirtualDevice
 
 
 def main():
-    # สร้างอุปกรณ์จำลอง 3 ตัวและเก็บไว้ในรายการเดียวกัน
-    devices = [
-        VirtualDevice(device_id="ESP32-ROOM-001"),
-        VirtualDevice(device_id="ESP32-ROOM-002"),
-        VirtualDevice(device_id="ESP32-ROOM-003"),
-        VirtualDevice(device_id="ESP32-ROOM-004"),
-        VirtualDevice(device_id="ESP32-ROOM-005"),
-        VirtualDevice(device_id="ESP32-ROOM-006"),
-        VirtualDevice(device_id="ESP32-ROOM-007"),
-        VirtualDevice(device_id="ESP32-ROOM-008"),
-        VirtualDevice(device_id="ESP32-ROOM-009"),
-        VirtualDevice(device_id="ESP32-ROOM-010"),
-    ]
+    # สร้างรายการเปล่าสำหรับเก็บ Device
+    devices = []
+    # สร้าง Device หมายเลข 001 ถึง 010
+    for number in range(1, 11):
+        device_id = f"ESP32-ROOM-{number:03d}"
+        devices.append(
+            VirtualDevice(device_id=device_id)
+        )
 
-    # อ่านและแสดงข้อมูลจากอุปกรณ์ทุกตัวซ้ำไปเรื่อย ๆ
     while True:
+        # อ่านและแสดงข้อมูลจาก Device ทีละเครื่อง
         for device in devices:
             telemetry = device.collect_telemetry()
             payload = asdict(telemetry)
@@ -34,7 +29,7 @@ def main():
                 )
             )
 
-        # รอหลังจากอุปกรณ์ทั้ง 3 ตัวส่งข้อมูลครบแล้ว
+        # เมื่อครบ 10 เครื่องแล้ว ให้รอ 2 วินาที
         time.sleep(2)
 
 

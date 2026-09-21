@@ -276,7 +276,9 @@ code .
 python simulator\main.py
 ```
 
-Simulator จะแสดงข้อมูลจากอุปกรณ์จำลองในรูปแบบ JSON ชุดใหม่ทุก 2 วินาที ตัวอย่างเช่น:
+Simulator มีอุปกรณ์จำลอง 10 เครื่อง รหัส ESP32-ROOM-001 ถึง ESP32-ROOM-010
+ในแต่ละรอบจะแสดง JSON ครบทั้ง 10 เครื่อง แล้วรอประมาณ 2 วินาทีก่อนเริ่มรอบใหม่
+ตัวอย่างข้อมูลจากหนึ่งเครื่อง:
 
 ```json
 {
@@ -393,8 +395,8 @@ docs: update architecture
 - [x] Temperature และ Humidity Sensor จำลอง
 - [x] Virtual Device และ Telemetry พร้อมเวลา UTC
 - [x] แสดงข้อมูลเป็น JSON ทุก 2 วินาที
-- [ ] Automated tests สำหรับ Simulator
-- [ ] Phase 2 Review
+- [x] Automated tests สำหรับ Simulator (10 tests)
+- [x] Phase 2 Review
 
 ---
 

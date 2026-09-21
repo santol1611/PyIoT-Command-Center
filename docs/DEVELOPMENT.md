@@ -68,8 +68,8 @@ code .
 
 ## Run the Current Phase
 
-Phase 2 provides a virtual device with temperature and humidity sensors. Run it
-through the simulator entry point:
+Phase 2 provides 10 virtual devices, each with temperature and humidity sensors.
+Run them through the simulator entry point:
 
 ```cmd
 python simulator\main.py
@@ -86,8 +86,11 @@ Example output:
 }
 ```
 
-The temperature, humidity, and timestamp values change each time. The simulator
-prints a new JSON object every 2 seconds. Press `Ctrl+C` to stop it.
+The example above shows one of the 10 devices. Each cycle prints a JSON object
+for every device, from ESP32-ROOM-001 through ESP32-ROOM-010. Temperature,
+humidity, and timestamp values change each cycle. After all 10 devices print,
+the simulator waits 2 seconds before starting the next cycle. Press `Ctrl+C`
+to stop it.
 
 ## Verify Changes
 
@@ -98,10 +101,10 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-There are no automated tests yet. The unittest command reports `Ran 0 tests` /
-`NO TESTS RAN` and returns a non-zero exit code. This no-test result is expected in
-the current phase and does not indicate a simulator failure. New tests should use
-the `test_*.py` naming convention inside `tests/`.
+The `tests/` directory now contains automated tests for the virtual sensors,
+device, and telemetry. The unittest command currently runs 10 tests and should
+report `OK` when they all pass. New test files should use the `test_*.py`
+naming convention inside `tests/`.
 
 ## Daily Workflow
 

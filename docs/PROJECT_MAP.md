@@ -44,8 +44,8 @@ Python backend package. It currently contains only `backend/__init__.py`.
 Virtual IoT device simulator package.
 
 - `simulator/__init__.py` — package marker
-- `simulator/main.py` — entry point that prints a new telemetry JSON object every
-  2 seconds
+- `simulator/main.py` — creates 10 virtual devices, prints one telemetry JSON
+  object per device, then waits 2 seconds before the next cycle
 - `simulator/device.py` — virtual device that collects values from its sensors
 - `simulator/telemetry.py` — telemetry data structure and UTC timestamp creation
 - `simulator/sensors/__init__.py` — sensor package marker
@@ -64,8 +64,13 @@ Reserved for development and maintenance scripts. It is currently empty.
 
 ### tests/
 
-Reserved for automated tests. It is currently empty; future test files should use
-the `test_*.py` naming convention.
+Automated tests for the Phase 2 simulator. Test files use the `test_*.py`
+naming convention.
+
+- `test_temperature_sensor.py` — checks temperature range, name, unit, and rounding
+- `test_humidity_sensor.py` — checks humidity range, name, unit, and rounding
+- `test_device.py` — checks device ID and collected telemetry
+- `test_telemetry.py` — checks stored values and UTC timestamp
 
 ### docs/
 

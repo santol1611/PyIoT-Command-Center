@@ -122,14 +122,15 @@ Example simulator output:
 }
 ```
 
-The temperature, humidity, and timestamp values change each time. The simulator
-prints a new JSON object every 2 seconds and continues until it is stopped with
-`Ctrl+C`.
+The example above shows one of the 10 virtual devices. Each cycle prints a
+JSON object for every device, from ESP32-ROOM-001 through ESP32-ROOM-010.
+The temperature, humidity, and timestamp values change each cycle. After
+all 10 devices print, the simulator waits 2 seconds before starting the
+next cycle. Stop it with `Ctrl+C`.
 
-The `tests/` directory currently has no tests. The unittest command reports
-`Ran 0 tests` / `NO TESTS RAN` and returns a non-zero exit code. Retain the command
-as the project test convention as tests are added, but do not treat the current
-no-test result as a code failure.
+The `tests/` directory contains automated tests for the virtual sensors,
+device, and telemetry. The unittest command should report `Ran 10 tests`
+and `OK` when all current tests pass.
 
 Do not run or add checks for future-phase components until that phase is requested.
 
