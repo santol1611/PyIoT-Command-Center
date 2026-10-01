@@ -45,9 +45,8 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 ```
 
-`requirements.txt` is currently empty because Phase 2 uses only Python's built-in
-modules. Keep this command in the setup flow so it remains valid when dependencies
-are added.
+Phase 3 installs `paho-mqtt==2.1.0`, which the simulator uses to connect and
+publish telemetry to an MQTT broker.
 
 ### 4. Create local environment settings
 
@@ -68,8 +67,18 @@ code .
 
 ## Run the Current Phase
 
-Phase 2 provides 10 virtual devices, each with temperature and humidity sensors.
-Run them through the simulator entry point:
+Phase 3 sends telemetry from the 10 virtual devices to Eclipse Mosquitto. Make
+sure Mosquitto is running and listening on `127.0.0.1:1883`.
+
+Open a subscriber in the first CMD window:
+
+```cmd
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+```
+
+The `+` wildcard receives the telemetry topic for any one device ID.
+
+Run the simulator in a second CMD window:
 
 ```cmd
 python simulator\main.py
@@ -86,11 +95,12 @@ Example output:
 }
 ```
 
-The example above shows one of the 10 devices. Each cycle prints a JSON object
-for every device, from ESP32-ROOM-001 through ESP32-ROOM-010. Temperature,
-humidity, and timestamp values change each cycle. After all 10 devices print,
-the simulator waits 2 seconds before starting the next cycle. Press `Ctrl+C`
-to stop it.
+The example above shows one of the 10 devices. Each cycle publishes the JSON to
+`pyiot/devices/{device_id}/telemetry` and prints it locally for every device,
+from ESP32-ROOM-001 through ESP32-ROOM-010. Temperature, humidity, and timestamp
+values change each cycle. After all 10 devices publish, the simulator waits
+2 seconds before starting the next cycle. Press `Ctrl+C` to stop the simulator
+and close its MQTT connection. Stop the subscriber with `Ctrl+C` as well.
 
 ## Verify Changes
 
@@ -101,21 +111,23 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-The `tests/` directory now contains automated tests for the virtual sensors,
-device, and telemetry. The unittest command currently runs 10 tests and should
-report `OK` when they all pass. New test files should use the `test_*.py`
-naming convention inside `tests/`.
+The `tests/` directory contains automated tests for the virtual sensors, device,
+telemetry, and MQTT publisher. The unittest command currently runs 13 tests and
+should report `OK` when they all pass. MQTT tests use a mock client, so Mosquitto
+does not need to be running for the automated tests. New test files should use
+the `test_*.py` naming convention inside `tests/`.
 
 ## Daily Workflow
 
 ```cmd
 cd /d "%USERPROFILE%\Desktop\Coding\PyIoT-Command-Center"
 .venv\Scripts\activate
-python simulator\main.py
 python -m unittest discover -s tests -p "test_*.py"
+python simulator\main.py
 ```
 
-The simulator keeps running, so stop it with `Ctrl+C` before running the unittest
-command.
+The simulator requires the local Mosquitto broker and keeps running until you
+press `Ctrl+C`. Use a separate CMD window for the MQTT subscriber when manually
+checking published messages.
 
 Use `deactivate` when you finish working in the virtual environment.

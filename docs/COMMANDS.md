@@ -11,6 +11,8 @@
 - [Python Packages และ pip](#-python-packages-และ-pip)
 - [คำสั่งเกี่ยวกับ Folder และ File](#-คำสั่งเกี่ยวกับ-folder-และ-file)
 - [คำสั่งเกี่ยวกับ CMD](#-คำสั่งเกี่ยวกับ-cmd)
+- [MQTT และ Mosquitto](#-mqtt-และ-mosquitto)
+- [Automated Tests](#-automated-tests)
 - [Git for Windows](#-git-for-windows)
 - [Git Repository](#-git-repository)
 - [Workflow ที่ใช้บ่อย](#-workflow-ที่ใช้บ่อย)
@@ -494,6 +496,54 @@ code .
 
 ---
 
+# 📡 MQTT และ Mosquitto
+
+## 🔎 ตรวจสอบสถานะ Mosquitto Service
+
+```cmd
+sc query mosquitto
+```
+
+ถ้า Broker ทำงานอยู่ ค่า `STATE` ควรแสดง `RUNNING`
+
+## 📥 เปิดรับ Telemetry จากทุก Device
+
+```cmd
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+```
+
+ส่วน `+` รับรหัส Device ได้หนึ่งระดับ เช่น `ESP32-ROOM-001` ถึง
+`ESP32-ROOM-010` และ `-v` ทำให้แสดงทั้งชื่อ Topic และข้อความที่ได้รับ
+
+เปิดคำสั่งนี้ค้างไว้ใน CMD หน้าต่างแรก แล้วรัน Simulator ในอีกหน้าต่าง:
+
+```cmd
+python simulator\main.py
+```
+
+กด `Ctrl+C` เพื่อหยุด Simulator หรือ Subscriber
+
+---
+
+# 🧪 Automated Tests
+
+## ตรวจ Syntax ของ Python
+
+```cmd
+python -m compileall backend simulator
+```
+
+## รัน Test ทั้งหมด
+
+```cmd
+python -m unittest discover -s tests -p "test_*.py" -v
+```
+
+Phase 3 มี Test ทั้งหมด 13 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
+เปิด Mosquitto ขณะรัน Automated Tests
+
+---
+
 # 🐙 Git for Windows
 
 ## 📥 ติดตั้ง Git for Windows
@@ -778,6 +828,9 @@ tree /f
 | Clear CMD | `cls` |
 | เปิด VS Code | `code .` |
 | Run Python File | `python path\file.py` |
+| ตรวจ Mosquitto Service | `sc query mosquitto` |
+| รัน Test ทั้งหมด | `python -m unittest discover -s tests -p "test_*.py" -v` |
+| ตรวจ Syntax | `python -m compileall backend simulator` |
 | ดู Git Version | `git --version` |
 | ดูตำแหน่ง Git | `where git` |
 | สร้าง Git Repository | `git init` |

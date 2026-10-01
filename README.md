@@ -13,7 +13,7 @@
   <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white" alt="Python">
   <img src="https://img.shields.io/badge/FastAPI-Planned-009688?logo=fastapi&logoColor=white" alt="FastAPI">
   <img src="https://img.shields.io/badge/PostgreSQL-Planned-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/MQTT-Planned-660066?logo=mqtt&logoColor=white" alt="MQTT">
+  <img src="https://img.shields.io/badge/MQTT-Phase%203-660066?logo=mqtt&logoColor=white" alt="MQTT">
   <img src="https://img.shields.io/badge/ESP32-Planned-E7352C?logo=espressif&logoColor=white" alt="ESP32">
   <img src="https://img.shields.io/badge/Docker-Planned-2496ED?logo=docker&logoColor=white" alt="Docker">
 </p>
@@ -106,6 +106,7 @@ Sensor / ESP32
 |---|---|
 | MQTT | โปรโตคอลสื่อสารระหว่าง Device และ Server |
 | Eclipse Mosquitto | MQTT Broker |
+| Paho MQTT | MQTT Client สำหรับ Simulator |
 | WebSocket | ส่งข้อมูลแบบ Real-time ไปยัง Browser |
 | ESP32 | IoT Hardware |
 
@@ -155,6 +156,7 @@ PyIoT-Command-Center/
 │   ├── main.py
 │   ├── device.py
 │   ├── telemetry.py
+│   ├── mqtt_publisher.py
 │   └── sensors/
 │       ├── __init__.py
 │       ├── base.py
@@ -166,6 +168,11 @@ PyIoT-Command-Center/
 │   └── js/
 │
 ├── tests/
+│   ├── test_temperature_sensor.py
+│   ├── test_humidity_sensor.py
+│   ├── test_device.py
+│   ├── test_telemetry.py
+│   └── test_mqtt_publisher.py
 │
 ├── scripts/
 │
@@ -197,8 +204,8 @@ PyIoT-Command-Center/
 | Phase | รายละเอียด | สถานะ |
 |:---:|---|:---:|
 | 01 | Project Foundation | ✅ |
-| 02 | Virtual Sensor Simulator | 🚧 กำลังพัฒนา |
-| 03 | MQTT Communication | ⏳ |
+| 02 | Virtual Sensor Simulator | ✅ |
+| 03 | MQTT Communication | 🚧 กำลังพัฒนา |
 | 04 | FastAPI Backend | ⏳ |
 | 05 | PostgreSQL & Data Model | ⏳ |
 | 06 | Web Dashboard | ⏳ |
@@ -270,14 +277,30 @@ python -m pip install -r requirements.txt
 code .
 ```
 
-### 6. รัน Simulator
+### 6. เปิดรับข้อมูลจาก Mosquitto
+
+Mosquitto ต้องทำงานอยู่ที่ `127.0.0.1:1883` เปิด CMD หน้าต่างแรกแล้วรัน:
+
+```cmd
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+```
+
+### 7. รัน Simulator
+
+เปิด CMD อีกหน้าต่าง เปิดใช้งาน `.venv` แล้วรัน:
 
 ```cmd
 python simulator\main.py
 ```
 
 Simulator มีอุปกรณ์จำลอง 10 เครื่อง รหัส ESP32-ROOM-001 ถึง ESP32-ROOM-010
-ในแต่ละรอบจะแสดง JSON ครบทั้ง 10 เครื่อง แล้วรอประมาณ 2 วินาทีก่อนเริ่มรอบใหม่
+ในแต่ละรอบจะส่ง JSON ของแต่ละเครื่องไปยัง Mosquitto พร้อมแสดงข้อมูลใน CMD
+เมื่อครบทั้ง 10 เครื่องแล้วจะรอประมาณ 2 วินาทีก่อนเริ่มรอบใหม่ Topic มีรูปแบบ:
+
+```text
+pyiot/devices/{device_id}/telemetry
+```
+
 ตัวอย่างข้อมูลจากหนึ่งเครื่อง:
 
 ```json
@@ -289,7 +312,7 @@ Simulator มีอุปกรณ์จำลอง 10 เครื่อง �
 }
 ```
 
-ค่าอุณหภูมิ ความชื้น และเวลาจะเปลี่ยนไปในแต่ละรอบ กด `Ctrl+C` เมื่อต้องการหยุด Simulator
+ค่าอุณหภูมิ ความชื้น และเวลาจะเปลี่ยนไปในแต่ละรอบ กด `Ctrl+C` เมื่อต้องการหยุด Simulator และปิดการเชื่อมต่อ MQTT
 
 ---
 
@@ -380,8 +403,8 @@ docs: update architecture
 │                                  │
 │     PyIoT Command Center         │
 │                                  │
-│     Current Phase: 02            │
-│     Virtual Sensor Simulator 🚧  │
+│     Current Phase: 03            │
+│     MQTT Communication 🚧        │
 │                                  │
 └──────────────────────────────────┘
 ```
@@ -395,8 +418,13 @@ docs: update architecture
 - [x] Temperature และ Humidity Sensor จำลอง
 - [x] Virtual Device และ Telemetry พร้อมเวลา UTC
 - [x] แสดงข้อมูลเป็น JSON ทุก 2 วินาที
-- [x] Automated tests สำหรับ Simulator (10 tests)
+- [x] Automated tests สำหรับ Simulator
 - [x] Phase 2 Review
+- [x] ติดตั้ง Paho MQTT 2.1.0
+- [x] เชื่อม Simulator กับ Eclipse Mosquitto
+- [x] ส่ง Telemetry ของ 10 Devices แยกตาม Topic
+- [x] Automated tests รวม 13 tests
+- [x] ทดสอบรับข้อความจริงด้วย Mosquitto Subscriber
 
 ---
 

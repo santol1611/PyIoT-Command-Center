@@ -16,8 +16,8 @@ Human-readable project introduction, roadmap, and overview.
 
 ### requirements.txt
 
-Python dependency list. It is currently empty because Phase 2 uses only Python's
-built-in modules.
+Python dependency list. Phase 3 uses `paho-mqtt==2.1.0` to connect the simulator
+to an MQTT broker.
 
 ### .env.example
 
@@ -44,8 +44,10 @@ Python backend package. It currently contains only `backend/__init__.py`.
 Virtual IoT device simulator package.
 
 - `simulator/__init__.py` — package marker
-- `simulator/main.py` — creates 10 virtual devices, prints one telemetry JSON
-  object per device, then waits 2 seconds before the next cycle
+- `simulator/main.py` — creates 10 virtual devices, publishes and prints one
+  telemetry JSON object per device, then waits 2 seconds before the next cycle
+- `simulator/mqtt_publisher.py` — connects to the MQTT broker and publishes each
+  device's telemetry as JSON with QoS 1
 - `simulator/device.py` — virtual device that collects values from its sensors
 - `simulator/telemetry.py` — telemetry data structure and UTC timestamp creation
 - `simulator/sensors/__init__.py` — sensor package marker
@@ -64,13 +66,15 @@ Reserved for development and maintenance scripts. It is currently empty.
 
 ### tests/
 
-Automated tests for the Phase 2 simulator. Test files use the `test_*.py`
-naming convention.
+Automated tests for the simulator and MQTT publisher. Test files use the
+`test_*.py` naming convention.
 
 - `test_temperature_sensor.py` — checks temperature range, name, unit, and rounding
 - `test_humidity_sensor.py` — checks humidity range, name, unit, and rounding
 - `test_device.py` — checks device ID and collected telemetry
 - `test_telemetry.py` — checks stored values and UTC timestamp
+- `test_mqtt_publisher.py` — checks MQTT connect, publish, and disconnect calls
+  without requiring a real broker
 
 ### docs/
 

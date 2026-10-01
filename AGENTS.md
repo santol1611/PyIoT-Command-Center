@@ -15,7 +15,7 @@ The project is being developed incrementally by phases.
 
 Current phase:
 
-Phase 2 - Virtual Sensor Simulator
+Phase 3 - MQTT Communication
 
 See:
 
@@ -101,36 +101,42 @@ After code changes:
 
 Use Windows CMD syntax. Activate `.venv` before running the commands below.
 
-### Phase 2 — Virtual Sensor Simulator
+### Phase 3 — MQTT Communication
 
 Run the applicable checks after changing Python code:
 
 ```cmd
 python -m compileall backend simulator
-python simulator\main.py
 python -m unittest discover -s tests -p "test_*.py"
 ```
 
-Example simulator output:
+The automated tests do not require a running MQTT broker because the MQTT
+client is replaced with a mock during those tests. The unittest command should
+report `Ran 13 tests` and `OK` when all current tests pass.
 
-```json
-{
-    "device_id": "ESP32-ROOM-001",
-    "temperature": 30.12,
-    "humidity": 65.34,
-    "timestamp": "2026-09-09T18:29:08.576066+00:00"
-}
+For a manual MQTT check, make sure Mosquitto is listening on `127.0.0.1:1883`.
+Open a subscriber in one CMD window:
+
+```cmd
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
 ```
 
-The example above shows one of the 10 virtual devices. Each cycle prints a
-JSON object for every device, from ESP32-ROOM-001 through ESP32-ROOM-010.
-The temperature, humidity, and timestamp values change each cycle. After
-all 10 devices print, the simulator waits 2 seconds before starting the
-next cycle. Stop it with `Ctrl+C`.
+Run the simulator in another CMD window:
 
-The `tests/` directory contains automated tests for the virtual sensors,
-device, and telemetry. The unittest command should report `Ran 10 tests`
-and `OK` when all current tests pass.
+```cmd
+python simulator\main.py
+```
+
+Example subscriber output:
+
+```text
+pyiot/devices/ESP32-ROOM-001/telemetry {"device_id": "ESP32-ROOM-001", "temperature": 30.12, "humidity": 65.34, "timestamp": "2026-09-09T18:29:08.576066+00:00"}
+```
+
+The simulator publishes one JSON message for every device, from
+ESP32-ROOM-001 through ESP32-ROOM-010, and also prints each message locally.
+After all 10 devices publish, it waits 2 seconds before starting the next
+cycle. Stop the simulator and subscriber with `Ctrl+C`.
 
 Do not run or add checks for future-phase components until that phase is requested.
 

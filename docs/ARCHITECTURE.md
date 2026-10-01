@@ -74,11 +74,35 @@ Do not implement components from future phases unless explicitly requested.
 
 For example:
 
-During Phase 2, do not add:
+During Phase 3, do not add:
 
 - PostgreSQL
 - FastAPI
-- MQTT
 - Redis
 
 unless requested.
+
+
+## Current Implementation
+
+Phase 3 currently implements this data path:
+
+```text
+Virtual Device
+      |
+      | Telemetry JSON over MQTT
+      v
+Eclipse Mosquitto
+      |
+      v
+MQTT Subscriber
+```
+
+The simulator publishes telemetry from 10 virtual devices to topics in this
+format:
+
+```text
+pyiot/devices/{device_id}/telemetry
+```
+
+FastAPI, PostgreSQL, and the web dashboard remain future-phase components.
