@@ -539,7 +539,7 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Phase 3 มี Test ทั้งหมด 13 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
+Phase 3 มี Test ทั้งหมด 16 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
 เปิด Mosquitto ขณะรัน Automated Tests
 
 ---

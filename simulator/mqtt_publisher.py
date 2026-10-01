@@ -52,8 +52,14 @@ class MqttPublisher:
             qos=1,
         )
 
-        # รอจนการส่งข้อความนี้เสร็จ ก่อนทำงานต่อ
-        message_info.wait_for_publish()
+        # รอผลการส่งไม่เกิน 5 วินาที เพื่อไม่ให้โปรแกรมค้างตลอดไป
+        message_info.wait_for_publish(timeout=5)
+
+        # หากครบ 5 วินาทีแล้วยังส่งไม่สำเร็จ ให้แจ้งข้อผิดพลาดกลับไปยัง main.py
+        if not message_info.is_published():
+            raise TimeoutError(
+                "ไม่สามารถส่งข้อมูล MQTT ได้ภายใน 5 วินาที"
+            )
 
     # แจ้ง Broker ว่าจะเลิกเชื่อมต่อ แล้วหยุดงานเบื้องหลัง
     def disconnect(self):

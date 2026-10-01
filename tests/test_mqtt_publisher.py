@@ -36,6 +36,9 @@ class TestMqttPublisher(unittest.TestCase):
         # เราจึงตรวจสิ่งที่โค้ดสั่งส่งได้โดยไม่ต้องใช้ Mosquitto
         publisher.client = MagicMock()
 
+        # กำหนดให้ข้อความจำลองรายงานว่าส่งสำเร็จ
+        publisher.client.publish.return_value.is_published.return_value = True
+
         # สั่งให้โค้ดเตรียมและส่ง Telemetry
         publisher.publish_telemetry(telemetry)
 
@@ -57,9 +60,47 @@ class TestMqttPublisher(unittest.TestCase):
             qos=1,
         )
 
-        # ตรวจว่าโค้ดรอให้การส่งข้อความเสร็จก่อนทำงานต่อ
-        publisher.client.publish.return_value.wait_for_publish.assert_called_once_with()
-        
+        # ตรวจว่ารอผลการส่งไม่เกิน 5 วินาที
+        publisher.client.publish.return_value.wait_for_publish.assert_called_once_with(
+            timeout=5
+        )
+
+        # ตรวจว่ามีการถามสถานะว่าข้อความถูกส่งสำเร็จแล้วหรือไม่
+        publisher.client.publish.return_value.is_published.assert_called_once_with()
+
+    # ตรวจว่าเกิด TimeoutError เมื่อข้อความยังส่งไม่สำเร็จ
+    def test_publish_telemetry_raises_timeout_when_not_published(self):
+        # สร้าง Telemetry ตัวอย่างสำหรับใช้ส่ง
+        telemetry = Telemetry(
+            device_id="ESP32-ROOM-001",
+            temperature=30.5,
+            humidity=65.0,
+            timestamp="2026-09-24T10:00:00+00:00",
+        )
+
+        # สร้าง Publisher โดยไม่เชื่อมต่อ Broker จริง
+        publisher = MqttPublisher(
+            host="127.0.0.1",
+            port=1883,
+        )
+        publisher.client = MagicMock()
+
+        # จำลองว่าหลังจากรอแล้ว ข้อความยังส่งไม่สำเร็จ
+        message_info = publisher.client.publish.return_value
+        message_info.is_published.return_value = False
+
+        # ตรวจว่าคำสั่งสร้าง TimeoutError พร้อมข้อความที่เข้าใจได้
+        with self.assertRaisesRegex(
+            TimeoutError,
+            "ไม่สามารถส่งข้อมูล MQTT ได้ภายใน 5 วินาที",
+        ):
+            publisher.publish_telemetry(telemetry)
+
+        # แม้ส่งไม่สำเร็จ โค้ดต้องกำหนดเวลารอไว้ไม่เกิน 5 วินาที
+        message_info.wait_for_publish.assert_called_once_with(
+            timeout=5
+        )
+
     # ตรวจว่า Publisher เชื่อมต่อไปยัง Broker ตามค่าที่กำหนด
     def test_connect_uses_broker_address_and_starts_loop(self):
         # สร้าง Publisher ด้วยที่อยู่และพอร์ตที่เรารู้ล่วงหน้า
@@ -83,7 +124,7 @@ class TestMqttPublisher(unittest.TestCase):
 
         # ตรวจว่าเริ่มระบบดูแลการรับส่งข้อมูลเบื้องหลัง
         publisher.client.loop_start.assert_called_once_with()
-        
+
     # ตรวจว่า Publisher ยกเลิกการเชื่อมต่อและหยุดงานเบื้องหลัง
     def test_disconnect_stops_client_and_network_loop(self):
         # สร้าง Publisher สำหรับการทดสอบ

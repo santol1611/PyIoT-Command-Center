@@ -112,7 +112,7 @@ python -m unittest discover -s tests -p "test_*.py"
 
 The automated tests do not require a running MQTT broker because the MQTT
 client is replaced with a mock during those tests. The unittest command should
-report `Ran 13 tests` and `OK` when all current tests pass.
+report `Ran 16 tests` and `OK` when all current tests pass.
 
 For a manual MQTT check, make sure Mosquitto is listening on `127.0.0.1:1883`.
 Open a subscriber in one CMD window:
@@ -136,7 +136,9 @@ pyiot/devices/ESP32-ROOM-001/telemetry {"device_id": "ESP32-ROOM-001", "temperat
 The simulator publishes one JSON message for every device, from
 ESP32-ROOM-001 through ESP32-ROOM-010, and also prints each message locally.
 After all 10 devices publish, it waits 2 seconds before starting the next
-cycle. Stop the simulator and subscriber with `Ctrl+C`.
+cycle. If the broker becomes unavailable, publishing waits at most 5 seconds,
+then the simulator waits 2 seconds and tries again while Paho reconnects in the
+background. Stop the simulator and subscriber with `Ctrl+C`.
 
 Do not run or add checks for future-phase components until that phase is requested.
 

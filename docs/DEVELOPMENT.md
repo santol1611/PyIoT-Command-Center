@@ -102,6 +102,11 @@ values change each cycle. After all 10 devices publish, the simulator waits
 2 seconds before starting the next cycle. Press `Ctrl+C` to stop the simulator
 and close its MQTT connection. Stop the subscriber with `Ctrl+C` as well.
 
+If the broker stops while the simulator is running, publishing waits at most
+5 seconds. The simulator then waits 2 seconds before trying again while Paho
+handles reconnection in the background. When the broker returns, telemetry
+publishing resumes without restarting the simulator.
+
 ## Verify Changes
 
 Run the applicable checks after changing Python code:
@@ -112,7 +117,7 @@ python -m unittest discover -s tests -p "test_*.py"
 ```
 
 The `tests/` directory contains automated tests for the virtual sensors, device,
-telemetry, and MQTT publisher. The unittest command currently runs 13 tests and
+telemetry, and MQTT publisher. The unittest command currently runs 16 tests and
 should report `OK` when they all pass. MQTT tests use a mock client, so Mosquitto
 does not need to be running for the automated tests. New test files should use
 the `test_*.py` naming convention inside `tests/`.

@@ -172,7 +172,8 @@ PyIoT-Command-Center/
 │   ├── test_humidity_sensor.py
 │   ├── test_device.py
 │   ├── test_telemetry.py
-│   └── test_mqtt_publisher.py
+│   ├── test_mqtt_publisher.py
+│   └── test_main.py
 │
 ├── scripts/
 │
@@ -314,6 +315,10 @@ pyiot/devices/{device_id}/telemetry
 
 ค่าอุณหภูมิ ความชื้น และเวลาจะเปลี่ยนไปในแต่ละรอบ กด `Ctrl+C` เมื่อต้องการหยุด Simulator และปิดการเชื่อมต่อ MQTT
 
+หาก Mosquitto หยุดทำงานระหว่างทาง Simulator จะรอผลการส่งไม่เกิน 5 วินาที
+จากนั้นพัก 2 วินาทีแล้วลองใหม่ เมื่อ Broker กลับมาทำงาน Paho จะเชื่อมต่อใหม่
+เบื้องหลังและ Simulator จะส่งข้อมูลต่อโดยไม่ต้องเปิดโปรแกรมใหม่
+
 ---
 
 ## ⚙️ Environment Variables
@@ -423,7 +428,9 @@ docs: update architecture
 - [x] ติดตั้ง Paho MQTT 2.1.0
 - [x] เชื่อม Simulator กับ Eclipse Mosquitto
 - [x] ส่ง Telemetry ของ 10 Devices แยกตาม Topic
-- [x] Automated tests รวม 13 tests
+- [x] จัดการกรณีเชื่อมต่อ Broker ไม่ได้และการส่งเกินเวลา
+- [x] เชื่อมต่อใหม่อัตโนมัติเมื่อ Broker กลับมาทำงาน
+- [x] Automated tests รวม 16 tests
 - [x] ทดสอบรับข้อความจริงด้วย Mosquitto Subscriber
 
 ---

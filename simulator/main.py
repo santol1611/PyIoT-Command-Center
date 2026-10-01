@@ -21,8 +21,18 @@ def main():
         port=1883,
     )
 
-    # เชื่อมต่อกับ Mosquitto ก่อนเริ่มอ่านและส่งข้อมูล
-    publisher.connect()
+    # พยายามเชื่อมต่อกับ Mosquitto ก่อนเริ่มอ่านและส่งข้อมูล
+    try:
+        publisher.connect()
+
+    # หาก Broker ไม่ทำงานหรือเชื่อมต่อไม่ได้ ให้แสดงข้อความที่อ่านง่าย
+    except OSError as error:
+        print(
+            "ไม่สามารถเชื่อมต่อ MQTT Broker ได้\n"
+            f"ที่อยู่: {publisher.host}:{publisher.port}\n"
+            f"รายละเอียด: {error}"
+        )
+        return
 
     try:
         # ทำงานซ้ำไปเรื่อย ๆ จนกว่าผู้ใช้จะกด Ctrl+C
@@ -31,8 +41,20 @@ def main():
                 # อ่านค่า Sensor จาก Device เครื่องนี้
                 telemetry = device.collect_telemetry()
 
-                # ส่งข้อมูลไปยัง Mosquitto ผ่าน MQTT
-                publisher.publish_telemetry(telemetry)
+                # พยายามส่งข้อมูลไปยัง Mosquitto ผ่าน MQTT
+                try:
+                    publisher.publish_telemetry(telemetry)
+
+                # รับกรณีขาดการเชื่อมต่อหรือรอการส่งเกิน 5 วินาที
+                except (RuntimeError, TimeoutError) as error:
+                    print(
+                        "\nส่งข้อมูล MQTT ไม่สำเร็จ "
+                        "กำลังรอ 2 วินาทีก่อนลองใหม่\n"
+                        f"รายละเอียด: {error}"
+                    )
+
+                    # หยุดรอบของ Device ชั่วคราว เพื่อไม่ให้ผิดพลาดซ้ำ 10 ครั้ง
+                    break
 
                 # เตรียมข้อมูลสำหรับแสดงในหน้าต่าง CMD
                 payload = asdict(telemetry)

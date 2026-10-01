@@ -74,7 +74,9 @@ Automated tests for the simulator and MQTT publisher. Test files use the
 - `test_device.py` — checks device ID and collected telemetry
 - `test_telemetry.py` — checks stored values and UTC timestamp
 - `test_mqtt_publisher.py` — checks MQTT connect, publish, and disconnect calls
-  without requiring a real broker
+  plus the five-second publish timeout without requiring a real broker
+- `test_main.py` — checks startup connection failures and retry behavior after a
+  publish timeout
 
 ### docs/
 

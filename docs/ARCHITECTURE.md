@@ -105,4 +105,8 @@ format:
 pyiot/devices/{device_id}/telemetry
 ```
 
+Publishing uses QoS 1 and waits at most 5 seconds for confirmation. If the
+broker becomes unavailable, the simulator pauses for 2 seconds between retries
+while the Paho network loop reconnects in the background.
+
 FastAPI, PostgreSQL, and the web dashboard remain future-phase components.
