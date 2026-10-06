@@ -51,3 +51,6 @@ pip-wheel-metadata/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# 🔐 ไฟล์รหัสผ่านของ Mosquitto
+pyiot_password_file

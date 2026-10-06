@@ -48,18 +48,23 @@ python -m pip install -r requirements.txt
 Phase 3 installs `paho-mqtt==2.1.0`, which the simulator uses to connect and
 publish telemetry to an MQTT broker.
 
-### 4. Configure local MQTT settings (optional)
+### 4. Configure local MQTT settings
 
-The simulator uses `127.0.0.1:1883` by default. To use another broker, set the
-values in the CMD window that will run the simulator:
+The simulator uses `127.0.0.1:1883` by default. Host and port are optional, but
+the current local Mosquitto setup requires a username and password. Set the
+values in the CMD window that will run the simulator, replacing the example
+password with the real local password:
 
 ```cmd
 set MQTT_HOST=127.0.0.1
 set MQTT_PORT=1883
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 ```
 
-Use `echo %MQTT_HOST%` and `echo %MQTT_PORT%` to check the current values. Clear
-them with `set MQTT_HOST=` and `set MQTT_PORT=` to return to the defaults.
+`MQTT_USERNAME` and `MQTT_PASSWORD` must be set together. Use `echo %MQTT_HOST%`,
+`echo %MQTT_PORT%`, and `echo %MQTT_USERNAME%` to check non-secret values. Do
+not display the real password with `echo`. Clear a value with `set NAME=`.
 
 `.env.example` documents the planned local settings, but Phase 3 does not load a
 `.env` file automatically. Never commit a real `.env` file; it is excluded by
@@ -76,10 +81,10 @@ code .
 Phase 3 sends telemetry from the 10 virtual devices to Eclipse Mosquitto. Make
 sure Mosquitto is running and listening on `127.0.0.1:1883`.
 
-Open a subscriber in the first CMD window:
+Open a subscriber in the first CMD window, replacing the example password:
 
 ```cmd
-"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -u "pyiot-simulator" -P "replace-with-your-password" -t "pyiot/devices/+/telemetry" -v
 ```
 
 The `+` wildcard receives the telemetry topic for any one device ID.
@@ -89,10 +94,13 @@ Run the simulator in a second CMD window:
 ```cmd
 set MQTT_HOST=127.0.0.1
 set MQTT_PORT=1883
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 python simulator\main.py
 ```
 
-The two `set` commands are optional when using the default local broker.
+The Host and Port commands are optional when using the default local address.
+The Username and Password are required by the current protected broker.
 
 Example output:
 
@@ -127,8 +135,8 @@ python -m unittest discover -s tests -p "test_*.py"
 ```
 
 The `tests/` directory contains automated tests for the virtual sensors, device,
-telemetry, MQTT publisher, startup errors, retries, and MQTT environment
-settings. The unittest command currently runs 20 tests and
+telemetry, MQTT publisher, startup errors, retries, and MQTT environment and
+credential settings. The unittest command currently runs 24 tests and
 should report `OK` when they all pass. MQTT tests use a mock client, so Mosquitto
 does not need to be running for the automated tests. New test files should use
 the `test_*.py` naming convention inside `tests/`.

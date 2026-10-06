@@ -280,10 +280,12 @@ code .
 
 ### 6. เปิดรับข้อมูลจาก Mosquitto
 
-Mosquitto ต้องทำงานอยู่ที่ `127.0.0.1:1883` เปิด CMD หน้าต่างแรกแล้วรัน:
+Mosquitto ต้องทำงานอยู่ที่ `127.0.0.1:1883` และอนุญาตให้ผู้ใช้
+`pyiot-simulator` เชื่อมต่อได้ เปิด CMD หน้าต่างแรกแล้วแทนที่รหัสผ่านตัวอย่าง
+ด้วยรหัสผ่านจริงก่อนรัน:
 
 ```cmd
-"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -u "pyiot-simulator" -P "replace-with-your-password" -t "pyiot/devices/+/telemetry" -v
 ```
 
 ### 7. รัน Simulator
@@ -291,6 +293,8 @@ Mosquitto ต้องทำงานอยู่ที่ `127.0.0.1:1883` เ�
 เปิด CMD อีกหน้าต่าง เปิดใช้งาน `.venv` แล้วรัน:
 
 ```cmd
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 python simulator\main.py
 ```
 
@@ -323,14 +327,18 @@ pyiot/devices/{device_id}/telemetry
 
 ## ⚙️ Environment Variables
 
-Simulator อ่าน `MQTT_HOST` และ `MQTT_PORT` จาก Environment Variables ของ
-Windows โดยตรง หากไม่กำหนดค่า จะใช้ `127.0.0.1` และ `1883` เป็นค่าเริ่มต้น
+Simulator อ่าน `MQTT_HOST`, `MQTT_PORT`, `MQTT_USERNAME` และ `MQTT_PASSWORD`
+จาก Environment Variables ของ Windows โดยตรง หากไม่กำหนด Host และ Port จะใช้
+`127.0.0.1` และ `1883` เป็นค่าเริ่มต้น ส่วน Username และ Password ต้องกำหนดมา
+พร้อมกันเมื่อ Broker เปิดใช้การยืนยันตัวตน
 
 กำหนดค่าชั่วคราวใน CMD หน้าต่างปัจจุบัน:
 
 ```cmd
 set MQTT_HOST=127.0.0.1
 set MQTT_PORT=1883
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 python simulator\main.py
 ```
 
@@ -339,6 +347,7 @@ python simulator\main.py
 ```cmd
 echo %MQTT_HOST%
 echo %MQTT_PORT%
+echo %MQTT_USERNAME%
 ```
 
 ล้างค่าเพื่อกลับไปใช้ค่าเริ่มต้น:
@@ -346,6 +355,8 @@ echo %MQTT_PORT%
 ```cmd
 set MQTT_HOST=
 set MQTT_PORT=
+set MQTT_USERNAME=
+set MQTT_PASSWORD=
 ```
 
 ไฟล์ `.env.example` ใช้เป็นตัวอย่างรายการค่าเท่านั้น ใน Phase 3 โปรแกรมยัง
@@ -360,12 +371,15 @@ APP_ENV=development
 
 MQTT_HOST=127.0.0.1
 MQTT_PORT=1883
+MQTT_USERNAME=pyiot-simulator
+MQTT_PASSWORD=replace-with-your-password
 
 DATABASE_HOST=localhost
 DATABASE_PORT=5432
 ```
 
-> ⚠️ ห้าม Commit ไฟล์ `.env` หรือ Credential จริงขึ้น Repository
+> ⚠️ ห้าม Commit ไฟล์ `.env` หรือ Credential จริงขึ้น Repository และไม่ควรใช้
+> `echo` แสดงรหัสผ่านจริงบนหน้าจอ
 
 ---
 
@@ -459,7 +473,9 @@ docs: update architecture
 - [x] เชื่อมต่อใหม่อัตโนมัติเมื่อ Broker กลับมาทำงาน
 - [x] ตั้งค่า MQTT Host และ Port ผ่าน Environment Variables
 - [x] ตรวจสอบค่า Host และ Port ก่อนเริ่ม Simulator
-- [x] Automated tests รวม 20 tests
+- [x] ป้องกัน Mosquitto ด้วย Username และ Password
+- [x] ตั้งค่า MQTT Username และ Password ผ่าน Environment Variables
+- [x] Automated tests รวม 24 tests
 - [x] ทดสอบรับข้อความจริงด้วย Mosquitto Subscriber
 
 ---

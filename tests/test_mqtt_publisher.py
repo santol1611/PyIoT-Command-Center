@@ -5,7 +5,7 @@ import json
 import unittest
 
 # สร้างตัวจำลองแทน MQTT Client จริง เพื่อไม่ให้ Test ส่งข้อมูลออกเครือข่าย
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 # นำส่วนที่ส่งข้อมูล MQTT มาเป็นสิ่งที่เราจะทดสอบ
 from simulator.mqtt_publisher import MqttPublisher
@@ -144,3 +144,46 @@ class TestMqttPublisher(unittest.TestCase):
 
         # ตรวจว่าระบบทำงานเบื้องหลังถูกหยุด
         publisher.client.loop_stop.assert_called_once_with()
+
+    # ตรวจว่า Username และ Password ถูกส่งให้ Paho Client
+    @patch("simulator.mqtt_publisher.mqtt.Client")
+    def test_publisher_sets_username_and_password(
+        self,
+        mqtt_client_class,
+    ):
+        # สร้าง Paho Client จำลอง
+        mqtt_client = MagicMock()
+        mqtt_client_class.return_value = mqtt_client
+
+        # สร้าง Publisher พร้อมข้อมูลยืนยันตัวตนตัวอย่าง
+        MqttPublisher(
+            host="127.0.0.1",
+            port=1883,
+            username="simulator",
+            password="test-password",
+        )
+
+        # ตรวจว่า Paho ได้รับ Username และ Password ครบ
+        mqtt_client.username_pw_set.assert_called_once_with(
+            username="simulator",
+            password="test-password",
+        )
+
+    # ตรวจว่าไม่ตั้งข้อมูลยืนยันตัวตน เมื่อไม่ได้กำหนด Username
+    @patch("simulator.mqtt_publisher.mqtt.Client")
+    def test_publisher_skips_authentication_without_username(
+        self,
+        mqtt_client_class,
+    ):
+        # สร้าง Paho Client จำลอง
+        mqtt_client = MagicMock()
+        mqtt_client_class.return_value = mqtt_client
+
+        # สร้าง Publisher โดยไม่ส่ง Username และ Password
+        MqttPublisher(
+            host="127.0.0.1",
+            port=1883,
+        )
+
+        # ต้องไม่เรียกคำสั่งตั้ง Username และ Password
+        mqtt_client.username_pw_set.assert_not_called()

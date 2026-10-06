@@ -112,18 +112,20 @@ python -m unittest discover -s tests -p "test_*.py"
 
 The automated tests do not require a running MQTT broker because the MQTT
 client is replaced with a mock during those tests. The unittest command should
-report `Ran 20 tests` and `OK` when all current tests pass.
+report `Ran 24 tests` and `OK` when all current tests pass.
 
 For a manual MQTT check, make sure Mosquitto is listening on `127.0.0.1:1883`.
 Open a subscriber in one CMD window:
 
 ```cmd
-"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -u "pyiot-simulator" -P "replace-with-your-password" -t "pyiot/devices/+/telemetry" -v
 ```
 
 Run the simulator in another CMD window:
 
 ```cmd
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 python simulator\main.py
 ```
 
@@ -140,9 +142,12 @@ cycle. If the broker becomes unavailable, publishing waits at most 5 seconds,
 then the simulator waits 2 seconds and tries again while Paho reconnects in the
 background. Stop the simulator and subscriber with `Ctrl+C`.
 
-The simulator reads `MQTT_HOST` and `MQTT_PORT` from operating-system
-environment variables. When they are not set, it uses `127.0.0.1` and `1883`.
-The `.env.example` file documents the values but is not loaded automatically.
+The simulator reads `MQTT_HOST`, `MQTT_PORT`, `MQTT_USERNAME`, and
+`MQTT_PASSWORD` from operating-system environment variables. Host and port
+default to `127.0.0.1` and `1883`. Username and password must be set together
+when the broker requires authentication. The `.env.example` file documents the
+values but is not loaded automatically. Never store real credentials in tracked
+files.
 
 Do not run or add checks for future-phase components until that phase is requested.
 

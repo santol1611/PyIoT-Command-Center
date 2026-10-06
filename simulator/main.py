@@ -43,6 +43,25 @@ def main():
         )
         return
 
+    # อ่านข้อมูลยืนยันตัวตน โดยใช้ค่าว่างเมื่อยังไม่ได้กำหนด
+    mqtt_username = os.getenv(
+        "MQTT_USERNAME",
+        "",
+    ).strip()
+    mqtt_password = os.getenv(
+        "MQTT_PASSWORD",
+        "",
+    )
+
+    # Username และ Password ต้องกำหนดมาพร้อมกัน
+    # ห้ามมีเพียงค่าใดค่าหนึ่ง เพราะจะเชื่อมต่อ Broker ไม่สำเร็จ
+    if bool(mqtt_username) != bool(mqtt_password):
+        print(
+            "MQTT_USERNAME และ MQTT_PASSWORD "
+            "ต้องกำหนดมาคู่กัน"
+        )
+        return
+
     # สร้างรายการเปล่าสำหรับเก็บ Device
     devices = []
     # สร้าง Device หมายเลข 001 ถึง 010
@@ -56,6 +75,8 @@ def main():
     publisher = MqttPublisher(
         host=mqtt_host,
         port=mqtt_port,
+        username=mqtt_username or None,
+        password=mqtt_password or None,
     )
 
     # พยายามเชื่อมต่อกับ Mosquitto ก่อนเริ่มอ่านและส่งข้อมูล

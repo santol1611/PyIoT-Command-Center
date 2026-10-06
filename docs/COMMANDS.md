@@ -498,28 +498,37 @@ code .
 
 # 📡 MQTT และ Mosquitto
 
-## ⚙️ กำหนด MQTT Host และ Port
+## ⚙️ กำหนด MQTT Host, Port และข้อมูลยืนยันตัวตน
 
 ```cmd
 set MQTT_HOST=127.0.0.1
 set MQTT_PORT=1883
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 ```
 
 ค่าที่ตั้งด้วย `set` มีผลเฉพาะ CMD หน้าต่างปัจจุบัน หากไม่ตั้งค่า Simulator
-จะใช้ `127.0.0.1:1883` โดยอัตโนมัติ
+จะใช้ `127.0.0.1:1883` โดยอัตโนมัติ ส่วน `MQTT_USERNAME` และ `MQTT_PASSWORD`
+ต้องกำหนดมาคู่กันเมื่อ Broker เปิดใช้การยืนยันตัวตน ให้เปลี่ยนรหัสผ่านตัวอย่าง
+เป็นรหัสผ่านจริงก่อนรัน Simulator
 
 ตรวจค่าปัจจุบัน:
 
 ```cmd
 echo %MQTT_HOST%
 echo %MQTT_PORT%
+echo %MQTT_USERNAME%
 ```
+
+ไม่ควรใช้ `echo` แสดง `MQTT_PASSWORD` เพราะรหัสผ่านจะปรากฏบนหน้าจอ
 
 ล้างค่าและกลับไปใช้ค่าเริ่มต้น:
 
 ```cmd
 set MQTT_HOST=
 set MQTT_PORT=
+set MQTT_USERNAME=
+set MQTT_PASSWORD=
 ```
 
 `.env.example` เป็นไฟล์อ้างอิงเท่านั้น และยังไม่ถูกโหลดอัตโนมัติใน Phase 3
@@ -535,7 +544,7 @@ sc query mosquitto
 ## 📥 เปิดรับ Telemetry จากทุก Device
 
 ```cmd
-"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -t "pyiot/devices/+/telemetry" -v
+"C:\Program Files\mosquitto\mosquitto_sub.exe" -h 127.0.0.1 -p 1883 -u "pyiot-simulator" -P "replace-with-your-password" -t "pyiot/devices/+/telemetry" -v
 ```
 
 ส่วน `+` รับรหัส Device ได้หนึ่งระดับ เช่น `ESP32-ROOM-001` ถึง
@@ -544,6 +553,8 @@ sc query mosquitto
 เปิดคำสั่งนี้ค้างไว้ใน CMD หน้าต่างแรก แล้วรัน Simulator ในอีกหน้าต่าง:
 
 ```cmd
+set "MQTT_USERNAME=pyiot-simulator"
+set "MQTT_PASSWORD=replace-with-your-password"
 python simulator\main.py
 ```
 
@@ -565,7 +576,7 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Phase 3 มี Test ทั้งหมด 20 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
+Phase 3 มี Test ทั้งหมด 24 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
 เปิด Mosquitto ขณะรัน Automated Tests
 
 ---

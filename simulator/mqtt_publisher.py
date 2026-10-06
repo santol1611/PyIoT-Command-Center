@@ -13,6 +13,8 @@ class MqttPublisher:
         host: str,
         port: int,
         client_id: str = "pyiot-simulator",
+        username: str | None = None,
+        password: str | None = None,
     ):
         # เก็บที่อยู่และพอร์ตของ Broker ไว้ใช้ตอนเชื่อมต่อ
         self.host = host
@@ -24,6 +26,13 @@ class MqttPublisher:
             client_id=client_id,
             protocol=mqtt.MQTTv311,
         )
+
+        # หากมี Username ให้ส่ง Username และ Password ตอนเชื่อมต่อ Broker
+        if username:
+            self.client.username_pw_set(
+                username=username,
+                password=password,
+            )
 
     # เชื่อมต่อ Broker และเริ่มดูแลการรับส่งข้อมูล MQTT เบื้องหลัง
     def connect(self):

@@ -111,6 +111,9 @@ while the Paho network loop reconnects in the background.
 
 The broker host and port come from the `MQTT_HOST` and `MQTT_PORT`
 operating-system environment variables, with defaults of `127.0.0.1` and
-`1883`. The simulator validates these values before creating the MQTT client.
+`1883`. The optional `MQTT_USERNAME` and `MQTT_PASSWORD` values provide the
+credentials required by a protected broker. The simulator requires the two
+credential values together and validates all settings before creating the MQTT
+client. The current local Mosquitto setup rejects anonymous connections.
 
 FastAPI, PostgreSQL, and the web dashboard remain future-phase components.

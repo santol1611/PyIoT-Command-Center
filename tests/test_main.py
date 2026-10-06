@@ -53,10 +53,11 @@ class TestSimulatorMain(unittest.TestCase):
         with patch("builtins.print") as print_mock:
             simulator_main.main()
 
-        # เมื่อไม่มี Environment Variables ต้องใช้ค่าเริ่มต้น
         mqtt_publisher_class.assert_called_once_with(
             host="127.0.0.1",
             port=1883,
+            username=None,
+            password=None,
         )
 
         # ตรวจว่า main.py พยายามเชื่อมต่อหนึ่งครั้ง
@@ -104,32 +105,45 @@ class TestSimulatorMain(unittest.TestCase):
         mqtt_publisher_class.assert_called_once_with(
             host="192.168.1.50",
             port=1884,
+            username=None,
+            password=None,
         )
 
-    # ตรวจว่า Simulator ปฏิเสธ MQTT_PORT ที่ไม่ใช่ตัวเลข
+    # ตรวจว่า Simulator ส่ง Username และ Password ให้ MqttPublisher
     @patch.dict(
         "simulator.main.os.environ",
         {
-            "MQTT_PORT": "not-a-number",
+            "MQTT_HOST": "127.0.0.1",
+            "MQTT_PORT": "1883",
+            "MQTT_USERNAME": "simulator",
+            "MQTT_PASSWORD": "test-password",
         },
         clear=True,
     )
     @patch("simulator.main.MqttPublisher")
-    def test_main_rejects_non_numeric_mqtt_port(
+    def test_main_uses_mqtt_username_and_password(
         self,
         mqtt_publisher_class,
     ):
-        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
-        with patch("builtins.print") as print_mock:
+        # สร้าง Publisher จำลองและหยุดหลังขั้นเชื่อมต่อ
+        publisher = MagicMock()
+        publisher.host = "127.0.0.1"
+        publisher.port = 1883
+        publisher.connect.side_effect = ConnectionRefusedError(
+            "Connection refused"
+        )
+        mqtt_publisher_class.return_value = publisher
+
+        # ซ่อนข้อความเชื่อมต่อไม่สำเร็จ เพราะ Test นี้ตรวจ Credential
+        with patch("builtins.print"):
             simulator_main.main()
 
-        # ค่าผิดตั้งแต่ขั้นเตรียม จึงต้องยังไม่สร้าง Publisher
-        mqtt_publisher_class.assert_not_called()
-
-        # ข้อความต้องบอกค่าที่ผิดและรูปแบบที่ถูกต้อง
-        print_mock.assert_called_once_with(
-            "ค่า MQTT_PORT ไม่ถูกต้อง: not-a-number\n"
-            "MQTT_PORT ต้องเป็นเลขจำนวนเต็ม"
+        # ตรวจว่าข้อมูลยืนยันตัวตนถูกส่งครบ
+        mqtt_publisher_class.assert_called_once_with(
+            host="127.0.0.1",
+            port=1883,
+            username="simulator",
+            password="test-password",
         )
 
     # ตรวจว่า Simulator ปฏิเสธ MQTT_PORT ที่อยู่นอกช่วง
@@ -158,6 +172,32 @@ class TestSimulatorMain(unittest.TestCase):
             "MQTT_PORT ต้องอยู่ระหว่าง 1 ถึง 65535"
         )
 
+    # ตรวจว่า Simulator ปฏิเสธ MQTT_PORT ที่ไม่ใช่ตัวเลข
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_PORT": "not-a-number",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_rejects_non_numeric_mqtt_port(
+        self,
+        mqtt_publisher_class,
+    ):
+        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
+        with patch("builtins.print") as print_mock:
+            simulator_main.main()
+
+        # ค่าผิดตั้งแต่ขั้นเตรียม จึงต้องยังไม่สร้าง Publisher
+        mqtt_publisher_class.assert_not_called()
+
+        # ข้อความต้องบอกค่าที่ผิดและรูปแบบที่ถูกต้อง
+        print_mock.assert_called_once_with(
+            "ค่า MQTT_PORT ไม่ถูกต้อง: not-a-number\n"
+            "MQTT_PORT ต้องเป็นเลขจำนวนเต็ม"
+        )
+
     # ตรวจว่า Simulator ปฏิเสธ MQTT_HOST ที่เป็นข้อความว่าง
     @patch.dict(
         "simulator.main.os.environ",
@@ -181,6 +221,32 @@ class TestSimulatorMain(unittest.TestCase):
         # แจ้งให้ผู้ใช้ทราบว่า Host ห้ามเป็นข้อความว่าง
         print_mock.assert_called_once_with(
             "ค่า MQTT_HOST ต้องไม่เป็นข้อความว่าง"
+        )
+
+    # ตรวจว่า Simulator ปฏิเสธ Credential ที่กำหนดมาไม่ครบคู่
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_USERNAME": "simulator",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_rejects_incomplete_mqtt_credentials(
+        self,
+        mqtt_publisher_class,
+    ):
+        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
+        with patch("builtins.print") as print_mock:
+            simulator_main.main()
+
+        # Credential ไม่ครบ จึงต้องยังไม่สร้าง Publisher
+        mqtt_publisher_class.assert_not_called()
+
+        # ข้อความต้องบอกว่าต้องกำหนด Username และ Password พร้อมกัน
+        print_mock.assert_called_once_with(
+            "MQTT_USERNAME และ MQTT_PASSWORD "
+            "ต้องกำหนดมาคู่กัน"
         )
 
     # ตรวจว่า Simulator รอแล้วลองส่งใหม่ เมื่อ MQTT ส่งไม่สำเร็จ
