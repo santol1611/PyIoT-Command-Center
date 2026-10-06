@@ -26,8 +26,8 @@ from the operating-system environment and does not load this file automatically.
 
 ### .gitignore
 
-Git ignore rules for virtual environments, local configuration, caches, build
-artifacts, and operating-system files.
+Git ignore rules for virtual environments, local configuration, Mosquitto
+password files, caches, build artifacts, and operating-system files.
 
 ## Directories
 
@@ -45,11 +45,11 @@ Python backend package. It currently contains only `backend/__init__.py`.
 Virtual IoT device simulator package.
 
 - `simulator/__init__.py` — package marker
-- `simulator/main.py` — validates MQTT environment settings, creates 10 virtual
-  devices, publishes and prints one telemetry JSON object per device, then waits
-  2 seconds before the next cycle
-- `simulator/mqtt_publisher.py` — connects to the MQTT broker and publishes each
-  device's telemetry as JSON with QoS 1
+- `simulator/main.py` — validates MQTT address and credential settings, creates
+  10 virtual devices, publishes and prints one telemetry JSON object per device,
+  then waits 2 seconds before the next cycle
+- `simulator/mqtt_publisher.py` — applies optional MQTT credentials, connects to
+  the broker, and publishes each device's telemetry as JSON with QoS 1
 - `simulator/device.py` — virtual device that collects values from its sensors
 - `simulator/telemetry.py` — telemetry data structure and UTC timestamp creation
 - `simulator/sensors/__init__.py` — sensor package marker
@@ -75,10 +75,11 @@ Automated tests for the simulator and MQTT publisher. Test files use the
 - `test_humidity_sensor.py` — checks humidity range, name, unit, and rounding
 - `test_device.py` — checks device ID and collected telemetry
 - `test_telemetry.py` — checks stored values and UTC timestamp
-- `test_mqtt_publisher.py` — checks MQTT connect, publish, and disconnect calls
-  plus the five-second publish timeout without requiring a real broker
-- `test_main.py` — checks environment settings, startup connection failures, and
-  retry behavior after a publish timeout
+- `test_mqtt_publisher.py` — checks MQTT credentials, connect, publish, and
+  disconnect calls plus the five-second publish timeout without requiring a
+  real broker
+- `test_main.py` — checks address and credential settings, startup connection
+  failures, and retry behavior after a publish timeout
 
 ### docs/
 

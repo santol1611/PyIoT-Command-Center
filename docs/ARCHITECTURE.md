@@ -35,7 +35,7 @@ Project Foundation
 
 Virtual Sensor Simulator
 
-### Phase 3
+### Phase 3 — Completed
 
 MQTT
 
@@ -72,20 +72,16 @@ ESP32
 
 Do not implement components from future phases unless explicitly requested.
 
-For example:
-
-During Phase 3, do not add:
+The completed Phase 3 scope does not include:
 
 - PostgreSQL
 - FastAPI
 - Redis
 
-unless requested.
-
 
 ## Current Implementation
 
-Phase 3 currently implements this data path:
+The completed Phase 3 implementation provides this data path:
 
 ```text
 Virtual Device

@@ -13,9 +13,13 @@ PyIoT Command Center is a Python-first IoT platform for:
 
 The project is being developed incrementally by phases.
 
-Current phase:
+Latest completed phase:
 
-Phase 3 - MQTT Communication
+Phase 3 - MQTT Communication (Completed)
+
+Next planned phase:
+
+Phase 4 - FastAPI Backend
 
 See:
 
@@ -101,7 +105,7 @@ After code changes:
 
 Use Windows CMD syntax. Activate `.venv` before running the commands below.
 
-### Phase 3 — MQTT Communication
+### Completed Phase 3 — MQTT Communication
 
 Run the applicable checks after changing Python code:
 

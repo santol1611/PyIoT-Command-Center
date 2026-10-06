@@ -76,7 +76,7 @@ not display the real password with `echo`. Clear a value with `set NAME=`.
 code .
 ```
 
-## Run the Current Phase
+## Run Phase 3
 
 Phase 3 sends telemetry from the 10 virtual devices to Eclipse Mosquitto. Make
 sure Mosquitto is running and listening on `127.0.0.1:1883`.
