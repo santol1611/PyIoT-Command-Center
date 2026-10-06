@@ -1,4 +1,5 @@
 import json
+import os
 import time
 from dataclasses import asdict
 
@@ -6,6 +7,42 @@ from device import VirtualDevice
 from mqtt_publisher import MqttPublisher
 
 def main():
+    # อ่านที่อยู่ Broker จาก Environment Variable
+    # หากไม่ได้กำหนดไว้ จะใช้ 127.0.0.1 เป็นค่าเริ่มต้น
+    mqtt_host = os.getenv(
+        "MQTT_HOST",
+        "127.0.0.1",
+    ).strip()
+
+    # Environment Variable จะถูกอ่านเป็นข้อความ จึงต้องแปลงพอร์ตเป็นตัวเลข
+    mqtt_port_text = os.getenv(
+        "MQTT_PORT",
+        "1883",
+    )
+
+    # MQTT_HOST ต้องไม่เป็นข้อความว่าง
+    if not mqtt_host:
+        print("ค่า MQTT_HOST ต้องไม่เป็นข้อความว่าง")
+        return
+
+    # MQTT_PORT ต้องเป็นเลขจำนวนเต็ม
+    try:
+        mqtt_port = int(mqtt_port_text)
+    except ValueError:
+        print(
+            f"ค่า MQTT_PORT ไม่ถูกต้อง: {mqtt_port_text}\n"
+            "MQTT_PORT ต้องเป็นเลขจำนวนเต็ม"
+        )
+        return
+
+    # หมายเลข Port ที่ใช้งานได้ต้องอยู่ระหว่าง 1 ถึง 65535
+    if not 1 <= mqtt_port <= 65535:
+        print(
+            f"ค่า MQTT_PORT ไม่ถูกต้อง: {mqtt_port}\n"
+            "MQTT_PORT ต้องอยู่ระหว่าง 1 ถึง 65535"
+        )
+        return
+
     # สร้างรายการเปล่าสำหรับเก็บ Device
     devices = []
     # สร้าง Device หมายเลข 001 ถึง 010
@@ -17,8 +54,8 @@ def main():
 
     # สร้างตัวส่งข้อมูล MQTT หนึ่งตัวสำหรับอุปกรณ์จำลองทั้ง 10 เครื่อง
     publisher = MqttPublisher(
-        host="127.0.0.1",
-        port=1883,
+        host=mqtt_host,
+        port=mqtt_port,
     )
 
     # พยายามเชื่อมต่อกับ Mosquitto ก่อนเริ่มอ่านและส่งข้อมูล

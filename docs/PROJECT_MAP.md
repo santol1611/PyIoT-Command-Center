@@ -21,7 +21,8 @@ to an MQTT broker.
 
 ### .env.example
 
-Example local environment variables. Copy it to `.env` for local configuration.
+Reference values for local environment variables. Phase 3 reads MQTT settings
+from the operating-system environment and does not load this file automatically.
 
 ### .gitignore
 
@@ -44,8 +45,9 @@ Python backend package. It currently contains only `backend/__init__.py`.
 Virtual IoT device simulator package.
 
 - `simulator/__init__.py` — package marker
-- `simulator/main.py` — creates 10 virtual devices, publishes and prints one
-  telemetry JSON object per device, then waits 2 seconds before the next cycle
+- `simulator/main.py` — validates MQTT environment settings, creates 10 virtual
+  devices, publishes and prints one telemetry JSON object per device, then waits
+  2 seconds before the next cycle
 - `simulator/mqtt_publisher.py` — connects to the MQTT broker and publishes each
   device's telemetry as JSON with QoS 1
 - `simulator/device.py` — virtual device that collects values from its sensors
@@ -75,8 +77,8 @@ Automated tests for the simulator and MQTT publisher. Test files use the
 - `test_telemetry.py` — checks stored values and UTC timestamp
 - `test_mqtt_publisher.py` — checks MQTT connect, publish, and disconnect calls
   plus the five-second publish timeout without requiring a real broker
-- `test_main.py` — checks startup connection failures and retry behavior after a
-  publish timeout
+- `test_main.py` — checks environment settings, startup connection failures, and
+  retry behavior after a publish timeout
 
 ### docs/
 

@@ -112,7 +112,7 @@ python -m unittest discover -s tests -p "test_*.py"
 
 The automated tests do not require a running MQTT broker because the MQTT
 client is replaced with a mock during those tests. The unittest command should
-report `Ran 16 tests` and `OK` when all current tests pass.
+report `Ran 20 tests` and `OK` when all current tests pass.
 
 For a manual MQTT check, make sure Mosquitto is listening on `127.0.0.1:1883`.
 Open a subscriber in one CMD window:
@@ -139,6 +139,10 @@ After all 10 devices publish, it waits 2 seconds before starting the next
 cycle. If the broker becomes unavailable, publishing waits at most 5 seconds,
 then the simulator waits 2 seconds and tries again while Paho reconnects in the
 background. Stop the simulator and subscriber with `Ctrl+C`.
+
+The simulator reads `MQTT_HOST` and `MQTT_PORT` from operating-system
+environment variables. When they are not set, it uses `127.0.0.1` and `1883`.
+The `.env.example` file documents the values but is not loaded automatically.
 
 Do not run or add checks for future-phase components until that phase is requested.
 

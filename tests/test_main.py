@@ -25,7 +25,12 @@ from simulator import main as simulator_main
 
 # รวม Test ที่เกี่ยวข้องกับการเริ่มและหยุด Simulator
 class TestSimulatorMain(unittest.TestCase):
-    # เปลี่ยน MqttPublisher ใน main.py ให้เป็นของจำลองระหว่าง Test นี้
+    # ล้าง Environment Variables ชั่วคราว เพื่อทดสอบค่าเริ่มต้น
+    @patch.dict(
+        "simulator.main.os.environ",
+        {},
+        clear=True,
+    )
     @patch("simulator.main.MqttPublisher")
     def test_main_stops_when_broker_connection_fails(
         self,
@@ -48,6 +53,12 @@ class TestSimulatorMain(unittest.TestCase):
         with patch("builtins.print") as print_mock:
             simulator_main.main()
 
+        # เมื่อไม่มี Environment Variables ต้องใช้ค่าเริ่มต้น
+        mqtt_publisher_class.assert_called_once_with(
+            host="127.0.0.1",
+            port=1883,
+        )
+
         # ตรวจว่า main.py พยายามเชื่อมต่อหนึ่งครั้ง
         publisher.connect.assert_called_once_with()
 
@@ -61,7 +72,123 @@ class TestSimulatorMain(unittest.TestCase):
             "รายละเอียด: Connection refused"
         )
 
+    # ตรวจว่า Simulator ใช้ Host และ Port จาก Environment Variables
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_HOST": "192.168.1.50",
+            "MQTT_PORT": "1884",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_uses_mqtt_environment_settings(
+        self,
+        mqtt_publisher_class,
+    ):
+        # สร้าง Publisher จำลองเพื่อไม่เชื่อมต่อเครือข่ายจริง
+        publisher = MagicMock()
+        publisher.host = "192.168.1.50"
+        publisher.port = 1884
+        publisher.connect.side_effect = ConnectionRefusedError(
+            "Connection refused"
+        )
+        mqtt_publisher_class.return_value = publisher
+
+        # ซ่อนข้อความ Error เพราะ Test นี้มุ่งตรวจค่าที่ใช้สร้าง Publisher
+        with patch("builtins.print"):
+            simulator_main.main()
+
+        # Host ต้องเป็นข้อความตามที่กำหนด
+        # Port ต้องถูกแปลงจากข้อความ "1884" เป็นตัวเลข 1884
+        mqtt_publisher_class.assert_called_once_with(
+            host="192.168.1.50",
+            port=1884,
+        )
+
+    # ตรวจว่า Simulator ปฏิเสธ MQTT_PORT ที่ไม่ใช่ตัวเลข
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_PORT": "not-a-number",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_rejects_non_numeric_mqtt_port(
+        self,
+        mqtt_publisher_class,
+    ):
+        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
+        with patch("builtins.print") as print_mock:
+            simulator_main.main()
+
+        # ค่าผิดตั้งแต่ขั้นเตรียม จึงต้องยังไม่สร้าง Publisher
+        mqtt_publisher_class.assert_not_called()
+
+        # ข้อความต้องบอกค่าที่ผิดและรูปแบบที่ถูกต้อง
+        print_mock.assert_called_once_with(
+            "ค่า MQTT_PORT ไม่ถูกต้อง: not-a-number\n"
+            "MQTT_PORT ต้องเป็นเลขจำนวนเต็ม"
+        )
+
+    # ตรวจว่า Simulator ปฏิเสธ MQTT_PORT ที่อยู่นอกช่วง
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_PORT": "70000",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_rejects_mqtt_port_outside_valid_range(
+        self,
+        mqtt_publisher_class,
+    ):
+        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
+        with patch("builtins.print") as print_mock:
+            simulator_main.main()
+
+        # Port ไม่ถูกต้อง จึงต้องยังไม่สร้าง Publisher
+        mqtt_publisher_class.assert_not_called()
+
+        # แจ้งช่วง Port ที่สามารถใช้งานได้
+        print_mock.assert_called_once_with(
+            "ค่า MQTT_PORT ไม่ถูกต้อง: 70000\n"
+            "MQTT_PORT ต้องอยู่ระหว่าง 1 ถึง 65535"
+        )
+
+    # ตรวจว่า Simulator ปฏิเสธ MQTT_HOST ที่เป็นข้อความว่าง
+    @patch.dict(
+        "simulator.main.os.environ",
+        {
+            "MQTT_HOST": "   ",
+        },
+        clear=True,
+    )
+    @patch("simulator.main.MqttPublisher")
+    def test_main_rejects_empty_mqtt_host(
+        self,
+        mqtt_publisher_class,
+    ):
+        # เก็บข้อความที่โปรแกรมแสดงไว้ตรวจสอบ
+        with patch("builtins.print") as print_mock:
+            simulator_main.main()
+
+        # Host ไม่ถูกต้อง จึงต้องยังไม่สร้าง Publisher
+        mqtt_publisher_class.assert_not_called()
+
+        # แจ้งให้ผู้ใช้ทราบว่า Host ห้ามเป็นข้อความว่าง
+        print_mock.assert_called_once_with(
+            "ค่า MQTT_HOST ต้องไม่เป็นข้อความว่าง"
+        )
+
     # ตรวจว่า Simulator รอแล้วลองส่งใหม่ เมื่อ MQTT ส่งไม่สำเร็จ
+    @patch.dict(
+        "simulator.main.os.environ",
+        {},
+        clear=True,
+    )
     @patch("simulator.main.time.sleep")
     @patch("simulator.main.MqttPublisher")
     def test_main_retries_after_publish_timeout(

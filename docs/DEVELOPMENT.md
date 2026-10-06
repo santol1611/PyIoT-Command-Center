@@ -48,16 +48,22 @@ python -m pip install -r requirements.txt
 Phase 3 installs `paho-mqtt==2.1.0`, which the simulator uses to connect and
 publish telemetry to an MQTT broker.
 
-### 4. Create local environment settings
+### 4. Configure local MQTT settings (optional)
 
-Create a local `.env` file from the example:
+The simulator uses `127.0.0.1:1883` by default. To use another broker, set the
+values in the CMD window that will run the simulator:
 
 ```cmd
-copy .env.example .env
+set MQTT_HOST=127.0.0.1
+set MQTT_PORT=1883
 ```
 
-Edit `.env` only when the current phase needs its values. Never commit this file;
-it is excluded by `.gitignore`.
+Use `echo %MQTT_HOST%` and `echo %MQTT_PORT%` to check the current values. Clear
+them with `set MQTT_HOST=` and `set MQTT_PORT=` to return to the defaults.
+
+`.env.example` documents the planned local settings, but Phase 3 does not load a
+`.env` file automatically. Never commit a real `.env` file; it is excluded by
+`.gitignore`.
 
 ## Open the Project
 
@@ -81,8 +87,12 @@ The `+` wildcard receives the telemetry topic for any one device ID.
 Run the simulator in a second CMD window:
 
 ```cmd
+set MQTT_HOST=127.0.0.1
+set MQTT_PORT=1883
 python simulator\main.py
 ```
+
+The two `set` commands are optional when using the default local broker.
 
 Example output:
 
@@ -117,7 +127,8 @@ python -m unittest discover -s tests -p "test_*.py"
 ```
 
 The `tests/` directory contains automated tests for the virtual sensors, device,
-telemetry, and MQTT publisher. The unittest command currently runs 16 tests and
+telemetry, MQTT publisher, startup errors, retries, and MQTT environment
+settings. The unittest command currently runs 20 tests and
 should report `OK` when they all pass. MQTT tests use a mock client, so Mosquitto
 does not need to be running for the automated tests. New test files should use
 the `test_*.py` naming convention inside `tests/`.

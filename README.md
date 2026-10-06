@@ -323,7 +323,34 @@ pyiot/devices/{device_id}/telemetry
 
 ## ⚙️ Environment Variables
 
-สร้างไฟล์ `.env` จาก `.env.example`
+Simulator อ่าน `MQTT_HOST` และ `MQTT_PORT` จาก Environment Variables ของ
+Windows โดยตรง หากไม่กำหนดค่า จะใช้ `127.0.0.1` และ `1883` เป็นค่าเริ่มต้น
+
+กำหนดค่าชั่วคราวใน CMD หน้าต่างปัจจุบัน:
+
+```cmd
+set MQTT_HOST=127.0.0.1
+set MQTT_PORT=1883
+python simulator\main.py
+```
+
+ตรวจค่าปัจจุบัน:
+
+```cmd
+echo %MQTT_HOST%
+echo %MQTT_PORT%
+```
+
+ล้างค่าเพื่อกลับไปใช้ค่าเริ่มต้น:
+
+```cmd
+set MQTT_HOST=
+set MQTT_PORT=
+```
+
+ไฟล์ `.env.example` ใช้เป็นตัวอย่างรายการค่าเท่านั้น ใน Phase 3 โปรแกรมยัง
+ไม่ได้โหลดไฟล์ `.env` อัตโนมัติ การคัดลอกไฟล์อย่างเดียวจึงไม่เปลี่ยนค่าที่
+Simulator ใช้งาน
 
 ตัวอย่าง:
 
@@ -331,7 +358,7 @@ pyiot/devices/{device_id}/telemetry
 APP_NAME=PyIoT Command Center
 APP_ENV=development
 
-MQTT_HOST=localhost
+MQTT_HOST=127.0.0.1
 MQTT_PORT=1883
 
 DATABASE_HOST=localhost
@@ -430,7 +457,9 @@ docs: update architecture
 - [x] ส่ง Telemetry ของ 10 Devices แยกตาม Topic
 - [x] จัดการกรณีเชื่อมต่อ Broker ไม่ได้และการส่งเกินเวลา
 - [x] เชื่อมต่อใหม่อัตโนมัติเมื่อ Broker กลับมาทำงาน
-- [x] Automated tests รวม 16 tests
+- [x] ตั้งค่า MQTT Host และ Port ผ่าน Environment Variables
+- [x] ตรวจสอบค่า Host และ Port ก่อนเริ่ม Simulator
+- [x] Automated tests รวม 20 tests
 - [x] ทดสอบรับข้อความจริงด้วย Mosquitto Subscriber
 
 ---

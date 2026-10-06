@@ -498,6 +498,32 @@ code .
 
 # 📡 MQTT และ Mosquitto
 
+## ⚙️ กำหนด MQTT Host และ Port
+
+```cmd
+set MQTT_HOST=127.0.0.1
+set MQTT_PORT=1883
+```
+
+ค่าที่ตั้งด้วย `set` มีผลเฉพาะ CMD หน้าต่างปัจจุบัน หากไม่ตั้งค่า Simulator
+จะใช้ `127.0.0.1:1883` โดยอัตโนมัติ
+
+ตรวจค่าปัจจุบัน:
+
+```cmd
+echo %MQTT_HOST%
+echo %MQTT_PORT%
+```
+
+ล้างค่าและกลับไปใช้ค่าเริ่มต้น:
+
+```cmd
+set MQTT_HOST=
+set MQTT_PORT=
+```
+
+`.env.example` เป็นไฟล์อ้างอิงเท่านั้น และยังไม่ถูกโหลดอัตโนมัติใน Phase 3
+
 ## 🔎 ตรวจสอบสถานะ Mosquitto Service
 
 ```cmd
@@ -539,7 +565,7 @@ python -m compileall backend simulator
 python -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Phase 3 มี Test ทั้งหมด 16 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
+Phase 3 มี Test ทั้งหมด 20 รายการ การทดสอบ MQTT ใช้ Client จำลอง จึงไม่ต้อง
 เปิด Mosquitto ขณะรัน Automated Tests
 
 ---
